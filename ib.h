@@ -14,7 +14,7 @@
 #define IB_WR_ID_STOP		0xE000000000000000
 #define NUM_WARMING_UP_OPS      500000
 #define TOT_NUM_OPS             5000000
-
+#define GID_INDEX 0
 #if __BYTE_ORDER == __LITTLE_ENDIAN
 static inline uint64_t htonll (uint64_t x) {return bswap_64(x); }
 static inline uint64_t ntohll (uint64_t x) {return bswap_64(x); }
@@ -28,6 +28,10 @@ static inline uint64_t ntohll (uint64_t x) {return x; }
 struct QPInfo {
     uint16_t lid;
     uint32_t qp_num;
+    int psn;
+
+    uint64_t gid_global_interface_id;
+	uint64_t gid_global_subnet_prefix;
 }__attribute__ ((packed));
 
 enum MsgType {
@@ -36,7 +40,7 @@ enum MsgType {
     MSG_REGULAR,
 };
 
-int modify_qp_to_rts (struct ibv_qp *qp, uint32_t qp_num, uint16_t lid);
+int modify_qp_to_rts (struct ibv_qp *qp, uint32_t qp_num, uint16_t lid, int psn, uint64_t interface_id, uint64_t subnet_prefix);
 
 int post_send (uint32_t req_size, uint32_t lkey, uint64_t wr_id, 
 	       uint32_t imm_data, struct ibv_qp *qp, char *buf);

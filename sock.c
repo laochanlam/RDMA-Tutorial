@@ -148,7 +148,11 @@ int sock_set_qp_info(int sock_fd, struct QPInfo *qp_info)
 
     tmp_qp_info.lid       = htons(qp_info->lid);
     tmp_qp_info.qp_num    = htonl(qp_info->qp_num);
-    
+    tmp_qp_info.psn = htonl(qp_info->psn);
+    tmp_qp_info.gid_global_interface_id = htonll(qp_info->gid_global_interface_id);
+    tmp_qp_info.gid_global_subnet_prefix = htonll(qp_info->gid_global_subnet_prefix);    
+
+    printf("[Send] lid: %" PRIu16 ", qp_num: %u, psn: %d, gid_global_interface_id: %" PRIu64       ", gid_global_subnet_prefix:  %" PRIu64 "\n", qp_info->lid, qp_info->qp_num, qp_info->psn, qp_info->gid_global_interface_id, qp_info->gid_global_subnet_prefix);
     n = sock_write(sock_fd, (char *)&tmp_qp_info, sizeof(struct QPInfo));
     check(n==sizeof(struct QPInfo), "write qp_info to socket.");
 
@@ -168,8 +172,12 @@ int sock_get_qp_info(int sock_fd, struct QPInfo *qp_info)
 
     qp_info->lid       = ntohs(tmp_qp_info.lid);
     qp_info->qp_num    = ntohl(tmp_qp_info.qp_num);
-    
-    return 0;
+    qp_info->psn = ntohl(tmp_qp_info.psn);
+    qp_info->gid_global_interface_id = ntohll(tmp_qp_info.gid_global_interface_id);
+    qp_info->gid_global_subnet_prefix = ntohll(tmp_qp_info.gid_global_subnet_prefix);
+ 
+    printf("[Receive] lid: %" PRIu16 ", qp_num: %u, psn: %d, gid_global_interface_id: %" PRIu64 ", gid_global_subnet_prefix:  %" PRIu64 "\n", qp_info->lid, qp_info->qp_num, qp_info->psn, qp_info->gid_global_interface_id, qp_info->gid_global_subnet_prefix);
+   return 0;
 
  error:
     return -1;
